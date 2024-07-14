@@ -53,7 +53,7 @@ Language: Cpp
 #   LS_Cpp03 (in configuration: Cpp03) Use C++03-compatible syntax.
 #   LS_Cpp11 (in configuration: Cpp11) Use features of C++11 (e.g. A<A<int>> instead of A<A<int> >).
 #   LS_Auto (in configuration: Auto) Automatic detection based on the input.
-Standard: Cpp11
+Standard: Auto
 
 # Pointer and reference alignment style. Possible values: Left, Right, Middle.
 PointerAlignment: Left
@@ -119,7 +119,7 @@ AllowShortCaseLabelsOnASingleLine: true
 #   SFS_Empty (in configuration: Empty) Only merge empty functions.
 #   SFS_Inline (in configuration: Inline) Only merge functions defined inside a class. Implies “empty”.
 #   SFS_All (in configuration: All) Merge all functions fitting on a single line.
-AllowShortFunctionsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Inline
 
 # AllowShortIfStatementsOnASingleLine (bool)
 # If true, if (a) return; can be put on a single line.
@@ -161,7 +161,9 @@ BinPackParameters: false
 #   bool BeforeCatch Wrap before catch.
 #   bool BeforeElse Wrap before else.
 #   bool IndentBraces Indent the wrapped braces themselves.
-#BraceWrapping:
+BraceWrapping:
+    AfterFunction: true
+BraceWrapping
 
 # BreakAfterJavaFieldAnnotations (bool)
 # Break after each annotation on a field in Java files.
@@ -186,7 +188,7 @@ BreakBeforeBinaryOperators: false
 #   BS_GNU (in configuration: GNU) Always break before braces and add an extra level of indentation to braces of control statements, not to those of class, function or other definitions.
 #   BS_WebKit (in configuration: WebKit) Like Attach, but break before functions.
 #   BS_Custom (in configuration: Custom) Configure each individual brace in BraceWrapping.
-BreakBeforeBraces: Attach
+BreakBeforeBraces: Stroustrup
 
 # BreakBeforeTernaryOperators (bool)
 # If true, ternary operators will be placed after line breaks.

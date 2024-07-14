@@ -12,9 +12,10 @@
 #include <random>
 #include <thread>
 
-int main() {
+int main()
+{
     uint32_t threads = 5;
-    folly::CPUThreadPoolExecutor executor {threads};
+    folly::CPUThreadPoolExecutor executor { threads };
 
     std::mutex mtx;
 
@@ -29,7 +30,7 @@ int main() {
             std::this_thread::sleep_for(1ms * dist(rng));
 
             {
-                std::lock_guard lock {mtx};
+                std::lock_guard lock { mtx };
                 std::cout << boost::format("Work %1% done!\n") % work;
             }
         });

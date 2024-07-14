@@ -5,6 +5,7 @@ project(learn_folly)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_COMPILE_COMMANDS "-Wall -Wextra -pedantic")
 
 set(CMAKE_BUILD_TYPE "Debug")
 

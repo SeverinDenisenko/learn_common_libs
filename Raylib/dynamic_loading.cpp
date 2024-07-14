@@ -1,3 +1,5 @@
+// Copyright 2024 Severin Denisenko
+
 #include <cstdint>
 
 #include <boost/container/list.hpp>

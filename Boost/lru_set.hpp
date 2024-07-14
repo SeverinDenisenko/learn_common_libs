@@ -1,3 +1,5 @@
+// Copyright 2024 Severin Denisenko
+
 #pragma once
 
 #include <memory>
@@ -28,45 +30,45 @@ public:
     class lru_node final : public lru_list_hook, public lru_hash_set_hook {
     public:
         explicit lru_node(Key&& key)
-            : key_(std::move(key)) {
+            : key_(std::move(key))
+        {
         }
 
-        const Key& get_key() const noexcept {
-            return key_;
-        }
+        const Key& get_key() const noexcept { return key_; }
 
-        void set_key(Key key) {
-            key_ = std::move(key);
-        }
+        void set_key(Key key) { key_ = std::move(key); }
 
     private:
         Key key_;
     };
 
     struct lru_node_hash : Hash {
-        auto operator()(const Key& a) const {
-            return Hash::operator()(a);
-        }
+        auto operator()(const Key& a) const { return Hash::operator()(a); }
 
-        auto operator()(const lru_node& a) const {
+        auto operator()(const lru_node& a) const
+        {
             return Hash::operator()(a.get_key());
         }
     };
 
     struct lru_node_equal : Equal {
-        auto operator()(const lru_node& a, const lru_node& b) const {
+        auto operator()(const lru_node& a, const lru_node& b) const
+        {
             return Equal::operator()(a.get_key(), b.get_key());
         }
 
-        auto operator()(const Key& a, const lru_node& b) const {
+        auto operator()(const Key& a, const lru_node& b) const
+        {
             return Equal::operator()(a, b.get_key());
         }
 
-        auto operator()(const lru_node& a, const Key& b) const {
+        auto operator()(const lru_node& a, const Key& b) const
+        {
             return Equal::operator()(a.get_key(), b);
         }
 
-        auto operator()(const Key& a, const Key& b) const {
+        auto operator()(const Key& a, const Key& b) const
+        {
             return Equal::operator()(a, b);
         }
     };
@@ -89,14 +91,16 @@ public:
     map map_;
     list list_;
 
-    std::unique_ptr<lru_node> extract_node(typename list::iterator it) noexcept {
+    std::unique_ptr<lru_node> extract_node(typename list::iterator it) noexcept
+    {
         std::unique_ptr<lru_node> ret(&*it);
         map_.erase(map_.iterator_to(*it));
         list_.erase(it);
         return ret;
     }
 
-    void insert_node(std::unique_ptr<lru_node> node) noexcept {
+    void insert_node(std::unique_ptr<lru_node> node) noexcept
+    {
         if(!node) {
             return;
         }
@@ -112,10 +116,12 @@ public:
         , buckets_(max_size_)
         , bucket_traits_(buckets_.data(), max_size_)
         , map_(bucket_traits_)
-        , list_() {
+        , list_()
+    {
     }
 
-    bool contains(const Key& key) {
+    bool contains(const Key& key)
+    {
         auto it = map_.find(key, map_.hash_function(), map_.key_eq());
         if(it == map_.end()) {
             return false;
@@ -125,7 +131,8 @@ public:
         return true;
     }
 
-    bool put(const Key& key) {
+    bool put(const Key& key)
+    {
         auto it = map_.find(key, map_.hash_function(), map_.key_eq());
         if(it != map_.end()) {
             list_.splice(list_.end(), list_, list_.iterator_to(*it));
@@ -135,18 +142,15 @@ public:
             auto node = extract_node(list_.begin());
             node->set_key(key);
             insert_node(std::move(node));
-        } else {
+        }
+        else {
             auto node = std::make_unique<lru_node>(Key(key));
             insert_node(std::move(node));
         }
         return true;
     }
 
-    list::const_iterator begin() const {
-        return list_.begin();
-    }
+    list::const_iterator begin() const { return list_.begin(); }
 
-    list::const_iterator end() const {
-        return list_.end();
-    }
+    list::const_iterator end() const { return list_.end(); }
 };

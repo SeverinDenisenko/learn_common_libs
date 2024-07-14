@@ -1,3 +1,5 @@
+// Copyright 2024 Severin Denisenko
+
 #pragma once
 
 #include <memory>

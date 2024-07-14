@@ -14,8 +14,13 @@ You have to figure them out and install all libraries by yourself.
 
 * Specific library folders
 * * Boost
+* * * Interval tree
+* * * Intrusive containers (lru_map, lru_set)
 * * Folly
-* * Qt
-* Cool examples // TODO
+* * * Simple thread pool
+* * * Fibers
+* * Qt // TODO
+* Cool examples
+* * Dynamic chunk loading and unloading using boost intrusive containers
 * Intergration examples // TODO
-* Learning papers
+* Learning papers // TODO

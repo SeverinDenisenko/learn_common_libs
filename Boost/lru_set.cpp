@@ -4,6 +4,8 @@
 #include <iostream>
 #include <memory>
 
+#include <fmt/format.h>
+
 #include <boost/intrusive/link_mode.hpp>
 #include <boost/intrusive/list.hpp>
 #include <boost/intrusive/list_hook.hpp>
@@ -102,8 +104,9 @@ public:
         if(!node) {
             return;
         }
-        map_.insert(*node);               // noexcept
-        list_.insert(list_.end(), *node); // noexcept
+
+        map_.insert(*node);
+        list_.insert(list_.end(), *node);
         [[maybe_unused]] auto ignore = node.release();
     }
 
@@ -118,8 +121,9 @@ public:
 
     bool contains(const Key& key) {
         auto it = map_.find(key, map_.hash_function(), map_.key_eq());
-        if(it == map_.end())
+        if(it == map_.end()) {
             return false;
+        }
 
         list_.splice(list_.end(), list_, list_.iterator_to(*it));
         return true;
@@ -141,7 +145,22 @@ public:
         }
         return true;
     }
+
+    list::const_iterator begin() const {
+        return list_.begin();
+    }
+
+    list::const_iterator end() const {
+        return list_.end();
+    }
 };
+
+template <typename T> void print(lru_set<T>& set) {
+    for(const auto& val : set) {
+        std::cout << fmt::format("{} ", val.get_key());
+    }
+    std::cout << std::endl;
+}
 
 int main() {
     lru_set<int> set { 3 };
@@ -150,12 +169,17 @@ int main() {
     set.put(2);
     set.put(3);
 
-    std::cout << (set.contains(1) && set.contains(2) && set.contains(3)) << std::endl;
+    print(set);
 
     set.put(4);
 
-    std::cout << (set.contains(1)) << std::endl;
-    std::cout << (set.contains(2) && set.contains(3) && set.contains(4)) << std::endl;
+    print(set);
+
+    set.put(4);
+    set.put(4);
+    set.put(4);
+
+    print(set);
 
     return 0;
 }

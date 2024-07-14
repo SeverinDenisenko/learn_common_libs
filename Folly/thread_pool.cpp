@@ -24,7 +24,7 @@ int main()
     std::uniform_int_distribution<std::mt19937::result_type> dist(1, 10);
 
     uint32_t works = 5;
-    for(uint32_t work = 0; work < works; ++work) {
+    for (uint32_t work = 0; work < works; ++work) {
         executor.add([work, &mtx, &rng, &dist]() {
             using namespace std::chrono_literals;
             std::this_thread::sleep_for(1ms * dist(rng));

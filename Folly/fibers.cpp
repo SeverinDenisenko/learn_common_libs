@@ -14,7 +14,7 @@ int main()
 
     auto& fiberManager = folly::fibers::getFiberManager(evb);
     folly::fibers::Baton baton;
-    fiberManager.addTask([&]{
+    fiberManager.addTask([&] {
         std::cout << "Task: start" << std::endl;
         baton.wait();
         std::cout << "Task: after baton.wait()" << std::endl;

@@ -31,18 +31,17 @@ struct chunk_position_t {
     };
 };
 
+static constexpr integer max_chunks_ { 512 };
+static constexpr integer loading_range_ { 4 };
+static constexpr integer chunk_reapiting_ { 64 };
+static constexpr Vector2 chunk_size_ { 64, 64 };
+
 class chunk_t {
 public:
-    static constexpr float scale_ { 0.1f };
-    static constexpr Vector2 size_ { 64, 64 };
-
-    chunk_t(chunk_position_t position)
-        : position_(position)
+    chunk_t(chunk_position_t position, Texture2D texture)
+        : texture_(texture)
+        , position_(position)
     {
-        Image noise = GenImagePerlinNoise(
-        size_.x, size_.y, position.x * size_.x, position.y * size_.y, scale_);
-        texture_ = LoadTextureFromImage(noise);
-        UnloadImage(noise);
     }
 
     chunk_t(const chunk_t&) = delete;
@@ -60,62 +59,73 @@ public:
         b.position_                   = tmp_position;
     }
 
-    chunk_t(chunk_t&& other) { swap(*this, other); }
+    chunk_t(chunk_t&& other)
+    {
+        swap(*this, other);
+    }
 
     chunk_t& operator=(chunk_t&& other)
     {
-        if(&other == this) {
+        if (&other == this) {
             return *this;
         }
         swap(*this, other);
         return *this;
     }
 
-    ~chunk_t()
-    {
-        if(texture_.id != 0) {
-            UnloadTexture(texture_);
-            texture_.id = 0;
-        }
-    }
+    ~chunk_t() = default;
 
     void render() const
     {
-        DrawTextureRec(texture_, Rectangle { 0, 0, size_.x, size_.y },
-        Vector2 { position_.x * size_.x, position_.y * size_.y }, WHITE);
+        DrawTextureRec(texture_,
+            Rectangle { .x = chunk_size_.x * position_.x,
+                .y         = chunk_size_.y * position_.y,
+                .width     = chunk_size_.x,
+                .height    = chunk_size_.y },
+            Vector2 { .x = position_.x * chunk_size_.x, .y = position_.y * chunk_size_.y }, WHITE);
     }
 
-    chunk_position_t position() const { return position_; }
+    chunk_position_t position() const
+    {
+        return position_;
+    }
 
 private:
-    Texture2D texture_ { 0 };
-    chunk_position_t position_ {};
+    Texture2D texture_;
+    chunk_position_t position_;
 };
 
 class Map {
 public:
-    static constexpr integer max_chunks_ { 1024 };
-    static constexpr integer loading_range_ { 4 };
-
     Map()
         : chunks_ { max_chunks_ }
+        , texture_ { 0 }
     {
+        Image noise = GenImageChecked(chunk_reapiting_ * chunk_size_.x, chunk_reapiting_ * chunk_size_.y,
+            chunk_reapiting_, chunk_reapiting_, WHITE, BLACK);
+        texture_    = LoadTextureFromImage(noise);
+        UnloadImage(noise);
+    }
+
+    ~Map()
+    {
+        UnloadTexture(texture_);
     }
 
     void render()
     {
-        for(const auto& chunk : chunks_) {
+        for (const auto& chunk : chunks_) {
             chunk.get_value().render();
         }
     }
 
     void update(chunk_position_t position)
     {
-        for(integer i = -loading_range_; i <= loading_range_; ++i) {
-            for(integer j = -loading_range_; j <= loading_range_; ++j) {
+        for (integer i = -loading_range_; i <= loading_range_; ++i) {
+            for (integer j = -loading_range_; j <= loading_range_; ++j) {
                 chunk_position_t position_around { position.x + i, position.y + j };
-                if(!chunks_.contains(position_around)) {
-                    chunks_.put(position_around, chunk_t { position_around });
+                if (!chunks_.contains(position_around)) {
+                    chunks_.put(position_around, chunk_t { position_around, texture_ });
                 }
             }
         }
@@ -123,6 +133,7 @@ public:
 
 private:
     lru_map<chunk_position_t, chunk_t, chunk_position_t::hash, chunk_position_t::is_equal> chunks_;
+    Texture2D texture_;
 };
 
 int main(void)
@@ -141,19 +152,19 @@ int main(void)
     Map map;
 
     SetTargetFPS(60);
-    while(!WindowShouldClose()) {
-        if(IsKeyDown(KEY_RIGHT))
+    while (!WindowShouldClose()) {
+        if (IsKeyDown(KEY_RIGHT))
             camera.target.x += speed;
-        if(IsKeyDown(KEY_LEFT))
+        if (IsKeyDown(KEY_LEFT))
             camera.target.x -= speed;
-        if(IsKeyDown(KEY_DOWN))
+        if (IsKeyDown(KEY_DOWN))
             camera.target.y += speed;
-        if(IsKeyDown(KEY_UP))
+        if (IsKeyDown(KEY_UP))
             camera.target.y -= speed;
 
         chunk_position_t position { 0, 0 };
-        position.x = camera.target.x / chunk_t::size_.x;
-        position.y = camera.target.y / chunk_t::size_.y;
+        position.x = camera.target.x / chunk_size_.x;
+        position.y = camera.target.y / chunk_size_.y;
         map.update(position);
 
         BeginDrawing();
@@ -164,8 +175,7 @@ int main(void)
 
         EndMode2D();
 
-        DrawText(TextFormat("CURRENT FPS: %i", GetFPS()),
-        GetScreenWidth() - 220, 40, 20, GREEN);
+        DrawText(TextFormat("CURRENT FPS: %i", GetFPS()), GetScreenWidth() - 220, 40, 20, RED);
 
         EndDrawing();
     }

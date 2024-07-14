@@ -18,13 +18,13 @@ class lru_map {
 public:
     using link_mode = boost::intrusive::link_mode<
 #ifdef NDEBUG
-    boost::inintrusive::normal_link
+        boost::inintrusive::normal_link
 #else
-    boost::intrusive::safe_link
+        boost::intrusive::safe_link
 #endif
-    >;
+        >;
 
-    using lru_list_hook = boost::intrusive::list_base_hook<link_mode>;
+    using lru_list_hook     = boost::intrusive::list_base_hook<link_mode>;
     using lru_hash_set_hook = boost::intrusive::unordered_set_base_hook<link_mode>;
 
     class lru_node final : public lru_list_hook, public lru_hash_set_hook {
@@ -35,13 +35,25 @@ public:
         {
         }
 
-        const Key& get_key() const noexcept { return key_; }
+        const Key& get_key() const noexcept
+        {
+            return key_;
+        }
 
-        const Value& get_value() const noexcept { return value_; }
+        const Value& get_value() const noexcept
+        {
+            return value_;
+        }
 
-        void set_value(Value&& value) { value_ = std::move(value); }
+        void set_value(Value&& value)
+        {
+            value_ = std::move(value);
+        }
 
-        void set_key(Key key) { key_ = std::move(key); }
+        void set_key(Key key)
+        {
+            key_ = std::move(key);
+        }
 
     private:
         Key key_;
@@ -49,7 +61,10 @@ public:
     };
 
     struct lru_node_hash : Hash {
-        auto operator()(const Key& a) const { return Hash::operator()(a); }
+        auto operator()(const Key& a) const
+        {
+            return Hash::operator()(a);
+        }
 
         auto operator()(const lru_node& a) const
         {
@@ -79,17 +94,14 @@ public:
         }
     };
 
-    using map = boost::intrusive::unordered_set<lru_node,
-    boost::intrusive::constant_time_size<true>,
-    boost::intrusive::hash<lru_node_hash>,
-    boost::intrusive::equal<lru_node_equal>>;
+    using map = boost::intrusive::unordered_set<lru_node, boost::intrusive::constant_time_size<true>,
+        boost::intrusive::hash<lru_node_hash>, boost::intrusive::equal<lru_node_equal>>;
 
     using bucket_traits = map::bucket_traits;
     using bucket        = map::bucket_type;
     using buckets       = boost::container::vector<bucket>;
 
-    using list =
-    boost::intrusive::list<lru_node, boost::intrusive::constant_time_size<false>>;
+    using list = boost::intrusive::list<lru_node, boost::intrusive::constant_time_size<false>>;
 
     std::size_t max_size_;
     buckets buckets_;
@@ -107,7 +119,7 @@ public:
 
     void insert_node(std::unique_ptr<lru_node> node) noexcept
     {
-        if(!node) {
+        if (!node) {
             return;
         }
 
@@ -129,7 +141,7 @@ public:
     bool contains(const Key& key)
     {
         auto it = map_.find(key, map_.hash_function(), map_.key_eq());
-        if(it == map_.end()) {
+        if (it == map_.end()) {
             return false;
         }
 
@@ -140,24 +152,29 @@ public:
     bool put(const Key& key, Value&& value)
     {
         auto it = map_.find(key, map_.hash_function(), map_.key_eq());
-        if(it != map_.end()) {
+        if (it != map_.end()) {
             list_.splice(list_.end(), list_, list_.iterator_to(*it));
             return false;
         }
-        if(map_.size() == max_size_) {
+        if (map_.size() == max_size_) {
             auto node = extract_node(list_.begin());
             node->set_key(key);
             node->set_value(std::move(value));
             insert_node(std::move(node));
-        }
-        else {
+        } else {
             auto node = std::make_unique<lru_node>(key, std::move(value));
             insert_node(std::move(node));
         }
         return true;
     }
 
-    list::const_iterator begin() const { return list_.begin(); }
+    list::const_iterator begin() const
+    {
+        return list_.begin();
+    }
 
-    list::const_iterator end() const { return list_.end(); }
+    list::const_iterator end() const
+    {
+        return list_.end();
+    }
 };

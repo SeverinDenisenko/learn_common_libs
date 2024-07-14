@@ -19,9 +19,9 @@ void print()
 
 void print(interval_map_t& map)
 {
-    for(auto& [interval, set] : map) {
+    for (auto& [interval, set] : map) {
         std::cout << fmt::format("({}: {}): ", interval.lower(), interval.upper());
-        for(number_t num : set) {
+        for (number_t num : set) {
             std::cout << fmt::format("{} ", num);
         }
         std::cout << std::endl;

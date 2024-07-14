@@ -6,9 +6,10 @@
 
 #include "lru_map.hpp"
 
-template <typename T, typename U> void print(lru_map<T, U>& map)
+template <typename T, typename U>
+void print(lru_map<T, U>& map)
 {
-    for(const auto& val : map) {
+    for (const auto& val : map) {
         std::cout << fmt::format("({},  {}) ", val.get_key(), val.get_value());
     }
     std::cout << std::endl;

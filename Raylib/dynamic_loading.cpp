@@ -33,13 +33,14 @@ struct chunk_position_t {
 
 class chunk_t {
 public:
+    static constexpr float scale_ { 0.1f };
     static constexpr Vector2 size_ { 64, 64 };
 
     chunk_t(chunk_position_t position)
         : position_(position)
     {
         Image noise = GenImagePerlinNoise(
-        size_.x, size_.y, position.x * size_.x, position.y * size_.y, 1.0f);
+        size_.x, size_.y, position.x * size_.x, position.y * size_.y, scale_);
         texture_ = LoadTextureFromImage(noise);
         UnloadImage(noise);
     }
@@ -131,11 +132,11 @@ int main(void)
     InitWindow(screen_width, screen_height, "Dynamic loading and offloading");
 
     Camera2D camera;
-    camera.zoom     = 50.0f / screen_height;
+    camera.zoom     = 100.0f / screen_height;
     camera.target   = { 0, 0 };
     camera.offset   = { screen_width / 2.0f, screen_height / 2.0f };
     camera.rotation = 0.0f;
-    float speed     = 20.0f;
+    float speed     = 10.0f;
 
     Map map;
 

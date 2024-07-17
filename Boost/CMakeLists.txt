@@ -8,3 +8,6 @@ target_link_libraries(lru_set ${Boost_LIBRARIES} ${Fmt_LIBRARIES})
 
 add_executable(lru_map lru_map.cpp)
 target_link_libraries(lru_map ${Boost_LIBRARIES} ${Fmt_LIBRARIES})
+
+add_executable(state_mashine state_mashine.cpp)
+target_link_libraries(state_mashine ${Boost_LIBRARIES} ${Fmt_LIBRARIES})

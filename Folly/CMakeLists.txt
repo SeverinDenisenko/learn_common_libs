@@ -8,3 +8,6 @@ target_link_libraries(fibers_trivial ${Folly_LIBRARIES} ${Boost_LIBRARIES})
 
 add_executable(future_simple future_simple.cpp)
 target_link_libraries(future_simple ${Folly_LIBRARIES} ${Boost_LIBRARIES})
+
+add_executable(future_multithreaded future_multithreaded.cpp)
+target_link_libraries(future_multithreaded ${Folly_LIBRARIES} ${Boost_LIBRARIES})

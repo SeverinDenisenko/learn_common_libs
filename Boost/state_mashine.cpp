@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include <boost/msm/back11/state_machine.hpp>
+#include <boost/msm/back/state_machine.hpp>
 #include <boost/msm/front/state_machine_def.hpp>
 
 namespace msm = boost::msm;
@@ -130,7 +130,7 @@ struct lamp_ : public msm::front::state_machine_def<lamp_> {
 };
 
 // Pick a back-end
-using lamp = msm::back11::state_machine<lamp_>;
+using lamp = msm::back::state_machine<lamp_>;
 
 int main()
 {

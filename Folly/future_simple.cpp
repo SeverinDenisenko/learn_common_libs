@@ -26,6 +26,7 @@ public:
     }
 
 private:
+    // ThreadedExecutor spawns new tread for each task
     folly::ThreadedExecutor executor_;
 };
 

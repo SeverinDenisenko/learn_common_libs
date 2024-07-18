@@ -13,6 +13,7 @@
 int main()
 {
     uint32_t threads = 5;
+    // CPUThreadPoolExecutor, unlike ThreadedExecutor does not spawn threads
     folly::CPUThreadPoolExecutor executor { threads };
 
     std::mutex mtx;

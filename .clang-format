@@ -10,3 +10,8 @@ AllowShortIfStatementsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: None
 AllowShortCaseLabelsOnASingleLine: false
 AlwaysBreakTemplateDeclarations: true
+AlignAfterOpenBracket: AlwaysBreak
+BinPackArguments:      false
+BinPackParameters:     false
+PointerAlignment:      Left
+AlignTrailingComments: true
